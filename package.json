@@ -1,0 +1,12 @@
+{
+  "name": "hanafuda",
+  "version": "1.0.0",
+  "description": "a hanafuda card game ",
+  "main": "scripts.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "type": "module"
+}

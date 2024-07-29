@@ -1,29 +1,53 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+
 #player_hand {
     background-color: beige;
- 
-    align-items: center;
-    
     display: flex;
-    justify-content: center;
-    padding: 2rem;
+    
     max-width: 100%;
-    height: 133px;
+    height: 20vh;
 }
+#center {
+    background-color: rgb(245, 245, 177);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    max-width: 100%;
+    height: 60vh;
+}
+
+#field{
+ 
+    background-color: rgb(255, 255, 255);
+  
+   
+    display: flex;
+    height: 60%;
+    justify-content: center;
+    width: 50%;
+    
+}
+
 
 #cpu_hand {
     background-color: beige;
-   
-
-    align-items: center;
     display: flex;
-    justify-content: center;
-    padding: 2rem;
+
     max-width: 100%;
-    height: 133px;
+    height: 20vh;
 }
 
-#center{
-display: flex;
-  padding: 1vh;
-  align-items: center;
+#player_card{
+
+}
+
+#cpu_card{
+
+}
+
+#field_card{
+    
 }

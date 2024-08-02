@@ -6,6 +6,7 @@ class Card{
         this.month = month;
         this.value = value;
         this.imgName = imgName;
+        this.cardName = `${month} ${value}`;
         //check ribbon
         if (value == "red poem ribbon" || value == "blue poem ribbon" || value == "ribbon"){
             this.isRibbon = true;

@@ -41,6 +41,7 @@ function displayCards(){
         let img = document.createElement("img");
         img.src = player.hand[i].imgName;
         img.id = player.hand[i].cardName;
+        img.setAttribute('class', 'card');
         img.addEventListener('click',playerCardClick);   
         player_hand.appendChild(img);
     }
@@ -48,7 +49,9 @@ function displayCards(){
     //change this to flipped over cards
     for (let i=0;i<cpu.hand.length;i++){
         let img = document.createElement("img");
-        img.src = cpu.hand[i].imgName;   
+        img.src = cpu.hand[i].imgName; 
+        img.setAttribute('class', 'card');
+  
         cpu_hand.appendChild(img);
     }
 
@@ -58,6 +61,9 @@ function displayCards(){
         img.src = fieldCards[i].imgName;
         img.id = fieldCards[i].cardName;
         img.addEventListener('click',fieldCardClick); 
+        img.setAttribute('class', 'field_card');
+
+
         //this will show what can be played, change this later
         if (clickedPlayerCard.month == fieldCards[i].month){
             img.style.border = '1em solid yellow';
@@ -102,7 +108,6 @@ function fieldCardClick(){
             console.log(clickedFieldCard);
         }
     }
-    displayCards();
 }
 
 
@@ -111,6 +116,7 @@ function play(){
    
     initialDeal(deck);
     
-}
+}   
+
 
 export default play();

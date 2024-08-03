@@ -17,6 +17,8 @@ let cpu = {
 }
 
 let fieldCards = [];
+let clickedPlayerCard = "";
+let clickedFieldCard = "";
 
 var player_hand = document.getElementById("player_hand");
 var field = document.getElementById("field");
@@ -33,14 +35,13 @@ function displayCards(){
     cpu_hand.innerHTML = '';
 
     //note to self
-    //made hacky way to remove cards by setting the id to the image name
+    //id is the card name
 
     for (let i = 0;i<player.hand.length;i++){
         let img = document.createElement("img");
         img.src = player.hand[i].imgName;
         img.id = player.hand[i].cardName;
-        img.class = `player.hand[${i}]`
-        img.addEventListener('click',cardClick);   
+        img.addEventListener('click',playerCardClick);   
         player_hand.appendChild(img);
     }
 
@@ -51,10 +52,18 @@ function displayCards(){
         cpu_hand.appendChild(img);
     }
 
+    //field card
     for (let i=0;i<fieldCards.length;i++){
         let img = document.createElement("img");
-        img.src = fieldCards[i].imgName;  
+        img.src = fieldCards[i].imgName;
+        img.id = fieldCards[i].cardName;
+        img.addEventListener('click',fieldCardClick); 
+        //this will show what can be played, change this later
+        if (clickedPlayerCard.month == fieldCards[i].month){
+            img.style.border = '1em solid yellow';
+        } 
         field.appendChild(img);
+         
     }
 }
 
@@ -74,19 +83,27 @@ function initialDeal(deck){
     displayCards();
 }
 
-function cardClick(){
+function playerCardClick(){
     for (let i = 0;i<player.hand.length;i++){
         
         if(this.id == player.hand[i].cardName){
-            console.log(player.hand[i].cardName)
-
-            player.hand.splice(i,1);
+            clickedPlayerCard = player.hand[i];
+            console.log(clickedPlayerCard);
         }
-
-        }
-    displayCards();
+    }
+    
 }
 
+function fieldCardClick(){
+    for (let i = 0;i<fieldCards.length;i++){
+        
+        if(this.id == fieldCards[i].cardName){
+            clickedFieldCard = fieldCards[i];
+            console.log(clickedFieldCard);
+        }
+    }
+    displayCards();
+}
 
 
 function play(){

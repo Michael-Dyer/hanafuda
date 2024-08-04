@@ -2,7 +2,7 @@
 <html>
 <head>
       <title>Hanafuda web player</title>
-      <script src="script.js" type="module"></script>
+      <script src="javascript/script.js" type="module"></script>
       <link rel="stylesheet" href="style.css">
 </head>
 
@@ -11,10 +11,12 @@
 <main>
       <script>play()</script>
       <div id = cpu_hand_container>
+            <p id="cpu_score">cpu score: </p>
             <div id="cpu_hand" class="hand">
             </div>
+            
       </div>
-
+      <p id = "cpu_captured_cards">Cpu cards: </p>
       <div id="center">
             <div id="deck_container">
                   <section id="deck">
@@ -25,10 +27,12 @@
                   </section>
             </div>
       </div>
-
+      <p id = "player_captured_cards">Player cards: </p>
       <div id="player_hand_container">
+            <p id="player_score">Player score: </p>
             <div id="player_hand" class="hand">
             </div>
+            
       </div>
 
 

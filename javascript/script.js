@@ -6,12 +6,14 @@ let deck = new Deck();
 deck.newDeck();
 deck.shuffle();
 
+var playerScoring = new Yaku([]);
 let player = {
     hand: [],
     capturedCards: [],
     score: 0
 }
 
+var cpuScoring = new Yaku([]);
 let cpu = {
     hand: [],
     capturedCards: [],
@@ -27,10 +29,12 @@ let clickedFieldCard = "";
 let fieldClickFlag = 0;
 let playerCardClickFlag = 0;
 let fieldCardClickFlag = 0;
+
 //this flag is responsible for not letting cpu move unless clicked
 let mainClickFlag = 0;
 let cpu_flag = 0;
 
+//make cpu logic
 var brain = new CPULogic(cpu.hand,fieldCards,cpu.capturedCards,player.capturedCards,flippedCard)
 
 
@@ -54,7 +58,6 @@ main.addEventListener('click', mainClick);
 field.addEventListener('click',fieldClick);   
 
 function mainClick(){
-    console.log("you clicked me");
     mainClickFlag = 1;
     play();
 
@@ -109,7 +112,7 @@ function removeCard(array, item){
     }
 }
 
-function displayCards(){
+function display(){
 
     //these remove all children of the card display areas (cards)
     player_hand.innerHTML = '';
@@ -128,16 +131,31 @@ function displayCards(){
     player_captured_cards.textContent = "Player Cards: ";
     cpu_captured_cards.textContent = "CPU Cards: ";
 
-
+    
     //edit this to highlight or bold matches or potential matches
+
+
     for(let i = 0;i<player.capturedCards.length;i++){
-        player_captured_cards.textContent += `${player.capturedCards[i].cardName}: `;
+        let p = document.createElement("p");
+        p.textContent = `${player.capturedCards[i].cardName}: `
+        p.style.display = "inline";
+
+        if (playerScoring.isAlmost(player.capturedCards[i])){
+            p.style.border = "double"
+        }
+        player_captured_cards.append(p);
     }
 
     for(let i = 0;i<cpu.capturedCards.length;i++){
-        cpu_captured_cards.textContent += `${cpu.capturedCards[i].cardName}: `;
-    }
+        let p = document.createElement("p");
+        p.textContent = `${cpu.capturedCards[i].cardName}: `
+        p.style.display = "inline";
+        if (cpuScoring.isAlmost(cpu.capturedCards[i])){
+            p.style.border = "double"
+        }
 
+        cpu_captured_cards.append(p);
+    }
 
 
     for (let i = 0;i<player.hand.length;i++){
@@ -211,13 +229,30 @@ function initialDeal(deck){
     for (let i = 0;i<8;i++){
         fieldCards.push(deck.cards.pop());
     }
-    displayCards();
+    display();
+}
+
+function getAllThree(matchCard, fieldCard){
+    var numberOfMatches = 0;
+    var monthArr = [];
+    for (var i = 0;i<fieldCards.length;i++){
+        if (matchCard.month == fieldCards[i].month){
+            monthArr.push(fieldCards[i]);
+            numberOfMatches++;
+        }
+    }
+    return monthArr;
+
 }
 
 function matchMade(){
     //consider adding in animation
     //make sure to add in rule to capture all three cards if that is an option
     if (turn == "player hand"){
+
+
+        console.log(`${getAllThree(clickedPlayerCard,clickedFieldCard).length} matches`);
+
         player.capturedCards.push(clickedFieldCard);
         player.capturedCards.push(clickedPlayerCard);
         
@@ -229,8 +264,9 @@ function matchMade(){
         player.capturedCards.push(clickedFieldCard);
         player.capturedCards.push(flippedCard);
 
-        removeCard(fieldCards, clickedFieldCard)
         flippedCard = "";
+        removeCard(fieldCards, clickedFieldCard)
+        
         
     }
 
@@ -246,10 +282,16 @@ function matchMade(){
         cpu.capturedCards.push(brain.bestPair.card1);
         cpu.capturedCards.push(brain.bestPair.card2);
 
-        removeCard(fieldCards, brain.bestPair.card2);
         flippedCard = "";
+        removeCard(fieldCards, brain.bestPair.card2);
         
     }
+
+    playerScoring.fill(player.capturedCards);
+    cpuScoring.fill(cpu.capturedCards);
+    playerScoring.check();
+    cpuScoring.check();
+    console.log(playerScoring);
         
 
 }
@@ -368,7 +410,7 @@ function cpuFlipTurn(){
 }
 
 function play(){
-   displayCards();
+   display();
     
 
     if (turn == "player hand"){
@@ -394,7 +436,7 @@ function play(){
     mainClickFlag = 0;
     fieldClickFlag = 0;
     clickedFieldCard = "";
-    displayCards();
+    display();
 }   
 
 var yaku = new(Yaku(deck));

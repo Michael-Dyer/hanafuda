@@ -3,7 +3,9 @@ import Card from "./deck.js"
 import Yaku from "./yaku.js"
 
 
-
+//working fairly good for now,
+//could shift the expected value of cards depending if
+//the player cpu has made it impossible for the cpu to get a certain yaku
 export class CPULogic{
     constructor(hand,field,capturedCards,playerCapturedCards,flippedCard=""){
         this.hand = hand;

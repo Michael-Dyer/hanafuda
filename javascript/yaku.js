@@ -2,7 +2,7 @@ import Deck from "./deck.js";
 import Card from "./deck.js"
 
 export class Yaku {
-    constructor(cardArr){
+    constructor(cardArr=[]){
     this.cardArr = cardArr;
 
     this.isYaku = false;
@@ -11,7 +11,7 @@ export class Yaku {
     this.almostChaff = false;
     this.almostAnimal = false;
     this.almostRibbon = false;
-    this.almostLights = false
+    this.almostLights = false;
     
     this.almostBDB = false;
     this.almostRPR = false;
@@ -23,7 +23,7 @@ export class Yaku {
     this.atChaff = false;
     this.atAnimal = false;
     this.atRibbon = false;
-    this.atLights = false
+    this.atLights = false;
     
     this.atBDB = false;
     this.atRPR = false;
@@ -48,6 +48,15 @@ export class Yaku {
     this.containsRain = false;
     this.LWR = [];
     
+    }
+
+    removeDuplicates(arr) {
+        let unique = arr.reduce(function (acc, curr) {
+            if (!acc.includes(curr))
+                acc.push(curr);
+            return acc;
+        }, []);
+        return unique;
     }
 
     clear(){
@@ -144,6 +153,20 @@ export class Yaku {
                 this.ribbon.push(A[i])
             }
         }
+
+        //seems obvious now i could have used a more efficient list of list or map or something instead of formating so much text
+        this.chaff  = this.removeDuplicates(this.chaff)
+        this.animal = this.removeDuplicates(this.animal)
+        this.ribbon = this.removeDuplicates(this.ribbon)
+        this.lights = this.removeDuplicates(this.lights)
+
+
+        this.BDB = this.removeDuplicates(this.BDB)
+        this.RPR = this.removeDuplicates(this.RPR)
+        this.BPR = this.removeDuplicates(this.BPR)
+        this.CBV = this.removeDuplicates(this.CBV)
+        this.MV = this.removeDuplicates(this.MV)
+        this.LWR =  this.removeDuplicates(this.LWR)
     }
 
     check(){
@@ -219,6 +242,43 @@ export class Yaku {
         }
 
     }
+
+    isAlmost(card){
+        if (this.almostChaff == true){
+            return this.chaff.includes(card);
+        }
+        if (this.almostAnimal == true){
+            return this.animal.includes(card);
+        }
+        if (this.almostRibbon == true){
+            return this.ribbon.includes(card);
+        }
+        if (this.almostLights == true){
+            return this.lights.includes(card);
+        }
+        
+        if (this.almostBDB == true){
+            return this.BDB.includes(card);
+        }
+        if (this.almostRPR == true){
+            return this.RPR.includes(card);
+        }
+        if (this.almostBPR == true){
+            return this.BPR.includes(card);
+        }
+        if (this.almostLWR == true){
+            return this.LWR.includes(card);
+        }
+        if (this.almostCBV == true){
+            return this.CBV.includes(card);
+        }
+        if (this.almostMV == true){
+            return this.MV.includes(card);
+        }
+    }
+
+
+    
     
 
 }

@@ -15,17 +15,18 @@ export class CPULogic{
 
         this.posiblePairs = [];
         this.bestPair = [];
-        //console.log(this.hand)
         this.worstCard = ""
 
     }
 
-    update(hand,field,capturedCards,playerCapturedCards,flippedCard=""){
+    update(hand,field,capturedCards,playerCapturedCards,flippedCard){
         this.hand = hand;
         this.field = field;
         this.capturedCards = capturedCards;
         this.flippedCard = flippedCard;
         this.playerCapturedCards = playerCapturedCards;
+        //this.yaku = new Yaku;
+
         this.posiblePairs = [];
         this.bestPair = [];
         this.worstCard = ""
@@ -46,13 +47,14 @@ export class CPULogic{
         
     }
 
-    getPossiblePairs(card){       
+    getPossiblePairs(card){ 
+        
         for(var i = 0;i<this.field.length;i++){
             var pair = {
                 card1: "",
                 card2: "",
-
             }
+
             if(card.month==this.field[i].month){
                 
                 pair.card1 = card;
@@ -61,8 +63,17 @@ export class CPULogic{
             }
             if (pair.card1!=""&&pair.card2!=""){
                 this.posiblePairs.push(pair);
+
             }
         }
+
+    }
+
+    getFlipPairs(){
+
+        this.getPossiblePairs(this.flippedCard)
+        
+        this.findBestPair();
     }
 
     
@@ -87,6 +98,8 @@ export class CPULogic{
         }
         this.findBestPair();
     }
+
+
 
     
 

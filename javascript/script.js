@@ -27,6 +27,9 @@ let clickedFieldCard = "";
 let fieldClickFlag = 0;
 let playerCardClickFlag = 0;
 let fieldCardClickFlag = 0;
+//this flag is responsible for not letting cpu move unless clicked
+let mainClickFlag = 0;
+let cpu_flag = 0;
 
 var brain = new CPULogic(cpu.hand,fieldCards,cpu.capturedCards,player.capturedCards,flippedCard)
 
@@ -43,10 +46,19 @@ var cpu_score = document.getElementById("cpu_score");
 var player_captured_cards = document.getElementById("player_captured_cards");
 var cpu_captured_cards = document.getElementById("cpu_captured_cards");
 var partial_deck = document.getElementById("deck");
+var main = document.getElementById("everything");
+var turn_text = document.getElementById("turn");
+
+main.addEventListener('click', mainClick);
 
 field.addEventListener('click',fieldClick);   
 
+function mainClick(){
+    console.log("you clicked me");
+    mainClickFlag = 1;
+    play();
 
+}
 
 function playerCardClick(){
     playerCardClickFlag = 1;
@@ -106,22 +118,24 @@ function displayCards(){
     player_captured_cards.innerHTML = "";
     cpu_captured_cards.innerHTML = "";
     partial_deck.innerHTML = "";
+    turn_text.innerHTML = "";
 
     player_score.textContent = `Player score: ${player.score}`;
     cpu_score.textContent = `CPU score: ${cpu.score}`;
+    turn_text.textContent = `Round: ${round} - Turn: ${turn}`
     //note to self
     //id is the card name
     player_captured_cards.textContent = "Player Cards: ";
     cpu_captured_cards.textContent = "CPU Cards: ";
 
+
+    //edit this to highlight or bold matches or potential matches
     for(let i = 0;i<player.capturedCards.length;i++){
         player_captured_cards.textContent += `${player.capturedCards[i].cardName}: `;
-        //player_captured_cards += " ";
     }
 
     for(let i = 0;i<cpu.capturedCards.length;i++){
         cpu_captured_cards.textContent += `${cpu.capturedCards[i].cardName}: `;
-        //player_captured_cards += " ";
     }
 
 
@@ -172,7 +186,7 @@ function displayCards(){
             }
         } 
 
-        if(turn == "player flip" || turn == "cpu flip"){
+        if(turn == "player flip"){
             
             if (flippedCard.month == fieldCards[i].month){
                 img.style.border = '1em solid yellow';
@@ -226,6 +240,15 @@ function matchMade(){
 
         removeCard(cpu.hand, brain.bestPair.card1);
         removeCard(fieldCards, brain.bestPair.card2);
+    }
+
+    if(turn == "cpu flip"){
+        cpu.capturedCards.push(brain.bestPair.card1);
+        cpu.capturedCards.push(brain.bestPair.card2);
+
+        removeCard(fieldCards, brain.bestPair.card2);
+        flippedCard = "";
+        
     }
         
 
@@ -287,27 +310,61 @@ function playerFlipTurn(){
         flippedCard = "";
         turn = "cpu hand";
     }
+    brain.update(cpu.hand,fieldCards,cpu.capturedCards,player.capturedCards,flippedCard);
+    cpu_flag = 0;
 }
 
 function cpuHandTurn(){
-    brain.getHandPairs();
 
-    //I have the best pair found, just have to add a time delay and 
-    //console.log(brain.bestPair);
+    if (cpu_flag==0&&mainClickFlag==1){
+    brain.getHandPairs();
+    cpu_flag = 1;
+    }
+    else if (mainClickFlag==1){
+    console.log("In CPU hand turn")
     brain.findWorstCard();
-    
     
     if (brain.posiblePairs.length>0){
         matchMade();
         turn = "cpu flip";
+
     }
     else {
         fieldCards.push(brain.worstCard);
         removeCard(cpu.hand,brain.worstCard);
-        turn = "cpu flip";
+        turn = "cpu flip";        
     }
-    //brain.update(cpu.hand,fieldCards,cpu.capturedCards,player.capturedCards,flippedCard);
+}
+}
+
+function cpuFlipTurn(){
+    if (flippedCard==""&&mainClickFlag==1){
+        flipCard();
+    }
+    else if(mainClickFlag ==1) {
+    brain.update(cpu.hand,fieldCards,cpu.capturedCards,player.capturedCards,flippedCard);
+    console.log("in CPU flip turn");
+    console.log(`the flip is ${flippedCard}`);
+
     
+    brain.findWorstCard();
+    brain.getFlipPairs();
+    
+
+
+    if (brain.posiblePairs.length>0){
+        console.log("in match")
+        matchMade();
+        turn = "player hand";
+    }
+    else {
+        console.log("outta match")
+        fieldCards.push(flippedCard);
+        flippedCard = "";
+        turn = "player hand";
+    }
+}
+
 }
 
 function play(){
@@ -315,22 +372,26 @@ function play(){
     
 
     if (turn == "player hand"){
+        
         playerHandTurn();
     }
 
-    if (turn == "player flip"){
+    else if (turn == "player flip"){
         playerFlipTurn();
     }
-    if (turn == "cpu hand"){
+    else if (turn == "cpu hand"){
         cpuHandTurn();
-    }
-    if (turn == "cpu turn"){
         
+    }
+    else if (turn == "cpu flip"){
+        cpuFlipTurn();
+        clickedFieldCard = "";
     }
 
     //remeber to set clickedPlayerCard to "" when leaving cpu flip turn
 
     //console.log(turn);
+    mainClickFlag = 0;
     fieldClickFlag = 0;
     clickedFieldCard = "";
     displayCards();

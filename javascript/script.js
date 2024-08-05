@@ -4,7 +4,9 @@ import Yaku from "./yaku.js"
 
 let deck = new Deck();
 deck.newDeck();
-deck.shuffle();
+//deck.shuffle();
+
+//change this
 
 var playerScoring = new Yaku([]);
 let player = {
@@ -232,7 +234,7 @@ function initialDeal(deck){
     display();
 }
 
-function getAllThree(matchCard, fieldCard){
+function checkAllThree(matchCard, fieldCard){
     var numberOfMatches = 0;
     var monthArr = [];
     for (var i = 0;i<fieldCards.length;i++){
@@ -245,53 +247,109 @@ function getAllThree(matchCard, fieldCard){
 
 }
 
+function captureThree(month,opp){
+    //lazy double loop in case the cards are at the end
+    for (var y= 0; y<3;y++){
+    for (var i = 0;i<fieldCards.length;i++){
+        if (fieldCards[i].month == month){
+            console.log(fieldCards[i].month)
+            opp.capturedCards.push(fieldCards[i]);
+            removeCard(fieldCards, fieldCards[i]);
+        }
+    }
+    }
+
+    
+
+    console.log(`wow a match was made with this month ${month}`);
+}
+
+
+
 function matchMade(){
     //consider adding in animation
     //make sure to add in rule to capture all three cards if that is an option
     if (turn == "player hand"){
 
 
-        console.log(`${getAllThree(clickedPlayerCard,clickedFieldCard).length} matches`);
+        if (checkAllThree(clickedPlayerCard,clickedFieldCard).length==3){
+            player.capturedCards.push(clickedPlayerCard);
+            captureThree(clickedPlayerCard.month, player);
+            removeCard(player.hand, clickedPlayerCard);
 
+
+
+
+        }
+        else{
         player.capturedCards.push(clickedFieldCard);
         player.capturedCards.push(clickedPlayerCard);
         
         removeCard(player.hand, clickedPlayerCard);
         removeCard(fieldCards, clickedFieldCard);
+        }
     }
 
     if (turn == "player flip"){
+
+        if (checkAllThree(flippedCard,clickedFieldCard).length==3){
+            player.capturedCards.push(flippedCard);
+            captureThree(flippedCard.month, player);
+            flippedCard = "";
+
+
+
+        }
+        else{
         player.capturedCards.push(clickedFieldCard);
         player.capturedCards.push(flippedCard);
 
         flippedCard = "";
-        removeCard(fieldCards, clickedFieldCard)
-        
-        
+        removeCard(fieldCards, clickedFieldCard);
+        }     
     }
 
     if(turn == "cpu hand"){
+        if (checkAllThree(brain.bestPair.card1,brain.bestPair.card2).length==3){
+            cpu.capturedCards.push(brain.bestPair.card1);
+            captureThree(brain.bestPair.card1.month, cpu);
+            removeCard(cpu.hand, brain.bestPair.card1);
+
+        }
+        else{
         cpu.capturedCards.push(brain.bestPair.card1);
         cpu.capturedCards.push(brain.bestPair.card2);
 
         removeCard(cpu.hand, brain.bestPair.card1);
         removeCard(fieldCards, brain.bestPair.card2);
+        }
     }
 
+
     if(turn == "cpu flip"){
+        if (checkAllThree(brain.bestPair.card1,brain.bestPair.card2).length==3){
+            cpu.capturedCards.push(brain.bestPair.card1);
+            captureThree(brain.bestPair.card1.month, cpu);
+            flippedCard = "";
+
+
+        }
+        else{
         cpu.capturedCards.push(brain.bestPair.card1);
         cpu.capturedCards.push(brain.bestPair.card2);
 
         flippedCard = "";
         removeCard(fieldCards, brain.bestPair.card2);
+        }
         
     }
 
+    //this will update scoring once a match is made
     playerScoring.fill(player.capturedCards);
     cpuScoring.fill(cpu.capturedCards);
     playerScoring.check();
     cpuScoring.check();
-    console.log(playerScoring);
+    //console.log(playerScoring);
         
 
 }
@@ -363,7 +421,7 @@ function cpuHandTurn(){
     cpu_flag = 1;
     }
     else if (mainClickFlag==1){
-    console.log("In CPU hand turn")
+    //console.log("In CPU hand turn")
     brain.findWorstCard();
     
     if (brain.posiblePairs.length>0){
@@ -385,22 +443,17 @@ function cpuFlipTurn(){
     }
     else if(mainClickFlag ==1) {
     brain.update(cpu.hand,fieldCards,cpu.capturedCards,player.capturedCards,flippedCard);
-    console.log("in CPU flip turn");
-    console.log(`the flip is ${flippedCard}`);
+    //console.log("in CPU flip turn");
 
     
     brain.findWorstCard();
     brain.getFlipPairs();
     
-
-
     if (brain.posiblePairs.length>0){
-        console.log("in match")
         matchMade();
         turn = "player hand";
     }
     else {
-        console.log("outta match")
         fieldCards.push(flippedCard);
         flippedCard = "";
         turn = "player hand";

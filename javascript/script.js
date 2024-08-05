@@ -1,4 +1,6 @@
+import CPULogic from "./cpu_logic.js";
 import Deck from "./deck.js"
+import Yaku from "./yaku.js"
 
 let deck = new Deck();
 deck.newDeck();
@@ -13,7 +15,8 @@ let player = {
 let cpu = {
     hand: [],
     capturedCards: [],
-    score: 0
+    score: 0,
+    brain: new CPULogic,
 }
 
 let fieldCards = [];
@@ -296,6 +299,6 @@ function play(){
     displayCards();
 }   
 
-
+var yaku = new(Yaku(deck));
 
 export default play();

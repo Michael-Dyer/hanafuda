@@ -7,6 +7,7 @@ class Card{
         this.value = value;
         this.imgName = imgName;
         this.cardName = `${month} ${value}`;
+        this.potentialValue = 0;
         //check ribbon
         if (value == "red poem ribbon" || value == "blue poem ribbon" || value == "ribbon"){
             this.isRibbon = true;
@@ -14,12 +15,12 @@ class Card{
         else {
             this.isRibbon = false;
         }
-        //check bright
-        if (value == "crane" || value == "moon" || value == "curtain" || value == "pheonix"  ||  value == "rain"){
-            this.isBright = true;
+        //check light
+        if (value == "crane" || value == "moon" || value == "curtain" || value == "pheonix"){
+            this.isLight = true;
         }
         else {
-            this.isBright = false;
+            this.isLight = false;
         }
         //check animal
         if (value == "animal" || value == "boar" || value == "deer" || value == "butterflies" || value == "sake"){
@@ -34,6 +35,30 @@ class Card{
         }
         else{
             this.isChaff = false;
+        }
+
+        //calculate potential initial value for cpu
+        if (value == "sake" || value == "moon" || value == "curtain"){
+            this.potentialValue = 20;
+        }
+        
+        else if (this.isLight){
+            this.potentialValue = 15;
+        }
+        else if (value == "rain"){
+            this.potentialValue = 11;
+        }
+
+        else if (value == "red poem ribbon" || value == "blue poem ribbon"|| value == "boar" || value == "deer" || value == "butterflies"){
+            this.potentialValue = 10;
+        }
+
+        else if (this.isAnimal||this.isRibbon){
+            this.potentialValue = 5;
+        }
+
+        else {
+            this.potentialValue = 1;
         }
 
     }
@@ -137,5 +162,7 @@ class Deck {
         }
     }
 }
+
+
 
 export default Deck;

@@ -16,7 +16,6 @@ let cpu = {
     hand: [],
     capturedCards: [],
     score: 0,
-    brain: new CPULogic,
 }
 
 let fieldCards = [];
@@ -28,6 +27,9 @@ let clickedFieldCard = "";
 let fieldClickFlag = 0;
 let playerCardClickFlag = 0;
 let fieldCardClickFlag = 0;
+
+var brain = new CPULogic(cpu.hand,fieldCards,cpu.capturedCards,player.capturedCards,flippedCard)
+
 
 let round = 1;
 //turn can be "player hand" "player flip" "cpu hand" "cpu flip"
@@ -66,7 +68,7 @@ function fieldCardClick(){
         
         if(this.id == fieldCards[i].cardName){
             clickedFieldCard = fieldCards[i];
-            console.log(clickedFieldCard);
+            //console.log(clickedFieldCard);
         }
     }
 
@@ -199,7 +201,8 @@ function initialDeal(deck){
 }
 
 function matchMade(){
-    //consider trying animation
+    //consider adding in animation
+    //make sure to add in rule to capture all three cards if that is an option
     if (turn == "player hand"){
         player.capturedCards.push(clickedFieldCard);
         player.capturedCards.push(clickedPlayerCard);
@@ -215,6 +218,14 @@ function matchMade(){
         removeCard(fieldCards, clickedFieldCard)
         flippedCard = "";
         
+    }
+
+    if(turn == "cpu hand"){
+        cpu.capturedCards.push(brain.bestPair.card1);
+        cpu.capturedCards.push(brain.bestPair.card2);
+
+        removeCard(cpu.hand, brain.bestPair.card1);
+        removeCard(fieldCards, brain.bestPair.card2);
     }
         
 
@@ -241,7 +252,7 @@ function playerHandTurn(){
         fieldClickFlag = 0;
         clickedPlayerCard="";
         }
-        console.log(fieldCardClickFlag);
+        //console.log(fieldCardClickFlag);
         if(fieldClickFlag == 1){
 
             fieldCards.push(clickedPlayerCard);
@@ -276,12 +287,32 @@ function playerFlipTurn(){
         flippedCard = "";
         turn = "cpu hand";
     }
-    
+}
 
+function cpuHandTurn(){
+    brain.getHandPairs();
+
+    //I have the best pair found, just have to add a time delay and 
+    //console.log(brain.bestPair);
+    brain.findWorstCard();
+    
+    
+    if (brain.posiblePairs.length>0){
+        matchMade();
+        turn = "cpu flip";
+    }
+    else {
+        fieldCards.push(brain.worstCard);
+        removeCard(cpu.hand,brain.worstCard);
+        turn = "cpu flip";
+    }
+    //brain.update(cpu.hand,fieldCards,cpu.capturedCards,player.capturedCards,flippedCard);
+    
 }
 
 function play(){
    displayCards();
+    
 
     if (turn == "player hand"){
         playerHandTurn();
@@ -290,10 +321,16 @@ function play(){
     if (turn == "player flip"){
         playerFlipTurn();
     }
+    if (turn == "cpu hand"){
+        cpuHandTurn();
+    }
+    if (turn == "cpu turn"){
+        
+    }
 
     //remeber to set clickedPlayerCard to "" when leaving cpu flip turn
 
-    console.log(turn);
+    //console.log(turn);
     fieldClickFlag = 0;
     clickedFieldCard = "";
     displayCards();

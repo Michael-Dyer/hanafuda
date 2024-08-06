@@ -7,6 +7,9 @@ export class Yaku {
 
     this.hasYaku = false;
 
+    this.almostArr = [];
+    this.atArr = [];
+
     this.allYakus = [];
     this.allYakus = [];
     this.allPoints = [];
@@ -262,72 +265,100 @@ export class Yaku {
    
     //for displaying captured card names
     isAlmost(card){
-        if (this.almostChaff == true){
-            return this.chaff.includes(card);
+        this.almostArr = this.removeDuplicates(this.almostArr);
+        if (this.almostChaff == true&&this.chaff.includes(card)){
+            this.almostArr.push(card)
+            return;
+            
         }
-        if (this.almostAnimal == true){
-            return this.animal.includes(card);
+        if (this.almostAnimal == true&&this.animal.includes(card)){
+            this.almostArr.push(card)
+            return;
         }
-        if (this.almostRibbon == true){
-            return this.ribbon.includes(card);
+        if (this.almostRibbon == true&&this.ribbon.includes(card)){
+            this.almostArr.push(card)
+            return;
         }
-        if (this.almostLights == true){
-            return this.lights.includes(card);
+        if (this.almostLights == true&&this.lights.includes(card)){
+            this.almostArr.push(card)
+            return;
         }
         
-        if (this.almostBDB == true){
-            return this.BDB.includes(card);
+        if (this.almostBDB == true&&this.BDB.includes(card)){
+            this.almostArr.push(card)
+            return;
         }
-        if (this.almostRPR == true){
-            return this.RPR.includes(card);
+        if (this.almostRPR == true&&this.RPR.includes(card)){
+            this.almostArr.push(card)
+            return;
         }
-        if (this.almostBPR == true){
-            return this.BPR.includes(card);
+        if (this.almostBPR == true&&this.BPR.includes(card)){
+            this.almostArr.push(card)
+            return;
+
         }
-        if (this.almostLWR == true){
-            return this.LWR.includes(card);
+        if (this.almostLWR == true&&this.LWR.includes(card)){
+            this.almostArr.push(card)
+            return;
         }
-        if (this.almostCBV == true){
-            return this.CBV.includes(card);
+        if (this.almostCBV == true&&this.CBV.includes(card)){
+            this.almostArr.push(card)
+            return;
         }
-        if (this.almostMV == true){
-            return this.MV.includes(card);
+        if (this.almostMV == true&&this.MV.includes(card)){
+            this.almostArr.push(card)
+            return;
         }
+        
     }
 
     //for displaying captured card names
     isAt(card){
-        if (this.atChaff == true){
-            return this.chaff.includes(card);
+        this.atArr = this.removeDuplicates(this.atArr);
+        if (this.atChaff == true&&this.chaff.includes(card)){
+            this.atArr.push(card)
+            return;
+            
         }
-        if (this.atAnimal == true){
-            return this.animal.includes(card);
+        if (this.atAnimal == true&&this.animal.includes(card)){
+            this.atArr.push(card)
+            return;
         }
-        if (this.atRibbon == true){
-            return this.ribbon.includes(card);
+        if (this.atRibbon == true&&this.ribbon.includes(card)){
+            this.atArr.push(card)
+            return;
         }
-        if (this.atLights == true){
-            return this.lights.includes(card);
+        if (this.atLights == true&&this.lights.includes(card)){
+            this.atArr.push(card)
+            return;
         }
         
-        if (this.atBDB == true){
-            return this.BDB.includes(card);
+        if (this.atBDB == true&&this.BDB.includes(card)){
+            this.atArr.push(card)
+            return;
         }
-        if (this.atRPR == true){
-            return this.RPR.includes(card);
+        if (this.atRPR == true&&this.RPR.includes(card)){
+            this.atArr.push(card)
+            return;
         }
-        if (this.atBPR == true){
-            return this.BPR.includes(card);
+        if (this.atBPR == true&&this.BPR.includes(card)){
+            this.atArr.push(card)
+            return;
+    
         }
-        if (this.atLWR == true){
-            return this.LWR.includes(card);
+        if (this.atLWR == true&&this.LWR.includes(card)){
+            this.atArr.push(card)
+            return;
         }
-        if (this.atCBV == true){
-            return this.CBV.includes(card);
+        if (this.atCBV == true&&this.CBV.includes(card)){
+            this.atArr.push(card)
+            return;
         }
-        if (this.atMV == true){
-            return this.MV.includes(card);
+        if (this.atMV == true&&this.MV.includes(card)){
+            this.atArr.push(card)
+            return;
         }
+        
     }
 
     returnYakus(A){
@@ -424,7 +455,6 @@ export class Yaku {
             yakus.push(y);
 
         }
-        console.log(yakus);
         
         }
     return yakus

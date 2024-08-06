@@ -139,7 +139,7 @@ function display(){
     
     //edit this to highlight or bold matches or potential matches
 
-
+    /*
     for(let i = 0;i<player.capturedCards.length;i++){
         let p = document.createElement("p");
         p.textContent = `${player.capturedCards[i].cardName}: `
@@ -168,7 +168,45 @@ function display(){
         }
 
         cpu_captured_cards.append(p);
-    }
+    }*/
+        for(let i = 0;i<player.capturedCards.length;i++){
+            let p = document.createElement("p");
+            p.textContent = `${player.capturedCards[i].cardName}: `
+            p.style.display = "inline";
+            
+            playerScoring.isAt(player.capturedCards[i]);
+            playerScoring.isAlmost(player.capturedCards[i]);
+            if (playerScoring.almostArr.includes(player.capturedCards[i])){
+                p.style.border = "double"
+            }
+            
+            if (playerScoring.atArr.includes(player.capturedCards[i])){
+                p.style.border = "double"
+                p.style.background = "yellow"
+                console.log("bing")
+            }
+            player_captured_cards.append(p);
+        }
+        
+    
+        for(let i = 0;i<cpu.capturedCards.length;i++){
+            let p = document.createElement("p");
+            p.textContent = `${cpu.capturedCards[i].cardName}: `
+            p.style.display = "inline";
+            
+            cpuScoring.isAt(cpu.capturedCards[i]);
+            cpuScoring.isAlmost(cpu.capturedCards[i]);
+            if (cpuScoring.almostArr.includes(cpu.capturedCards[i])){
+                p.style.border = "double"
+            }
+            
+            if (cpuScoring.atArr.includes(cpu.capturedCards[i])){
+                p.style.border = "double"
+                p.style.background = "yellow"
+                console.log("bing")
+            }
+            cpu_captured_cards.append(p);
+        }
 
 
     for (let i = 0;i<player.hand.length;i++){

@@ -144,16 +144,21 @@ function display(){
         let p = document.createElement("p");
         p.textContent = `${player.capturedCards[i].cardName}: `
         p.style.display = "inline";
-
-        if (playerScoring.isAlmost(player.capturedCards[i])){
+        
+        playerScoring.isAt(player.capturedCards[i]);
+        playerScoring.isAlmost(player.capturedCards[i]);
+        if (playerScoring.almostArr.includes(player.capturedCards[i])){
             p.style.border = "double"
         }
-        if (playerScoring.isAt(player.capturedCards[i])){
+        
+        if (playerScoring.atArr.includes(player.capturedCards[i])){
             p.style.border = "double"
             p.style.background = "yellow"
+            console.log("bing")
         }
         player_captured_cards.append(p);
     }
+    
 
     for(let i = 0;i<cpu.capturedCards.length;i++){
         let p = document.createElement("p");
@@ -231,15 +236,15 @@ function display(){
 
 function initialDeal(deck){
 
-    for (let i = 0;i<8;i++){
+    for (let i = 0;i<25;i++){
         player.hand.push(deck.cards.pop());      
     }   
-
+    /*
     for (let i = 0;i<8;i++){
         cpu.hand.push(deck.cards.pop());
-    }
+    }*/
 
-    for (let i = 0;i<8;i++){
+    for (let i = 0;i<5;i++){
         fieldCards.push(deck.cards.pop());
     }
     display();
@@ -263,7 +268,6 @@ function captureThree(month,opp){
     for (var y= 0; y<3;y++){
     for (var i = 0;i<fieldCards.length;i++){
         if (fieldCards[i].month == month){
-            console.log(fieldCards[i].month)
             opp.capturedCards.push(fieldCards[i]);
             removeCard(fieldCards, fieldCards[i]);
         }
@@ -364,7 +368,6 @@ function matchMade(){
 
     //testing delete later
     player.yakus = playerScoring.returnYakus(player.capturedCards);
-    console.log(player.yakus);
 
 }
 
@@ -408,7 +411,6 @@ function playerHandTurn(){
         fieldClickFlag = 0;
         clickedPlayerCard="";
         }
-        //console.log(fieldCardClickFlag);
         if(fieldClickFlag == 1&&containsMonth==false){
 
             fieldCards.push(clickedPlayerCard);
@@ -444,7 +446,7 @@ function playerFlipTurn(){
     if(clickedFieldCard!=""){
         if(clickedFieldCard.month==flippedCard.month){
             matchMade();
-            turn = "cpu hand";
+            turn = "player hand";
             fieldClickFlag = 0;
         }
         //clickedFieldCard="";
@@ -453,7 +455,7 @@ function playerFlipTurn(){
     if(fieldClickFlag == 1&&containsMonth==false){
         fieldCards.push(flippedCard);
         flippedCard = "";
-        turn = "cpu hand";
+        turn = "player hand";
     }
     brain.update(cpu.hand,fieldCards,cpu.capturedCards,player.capturedCards,flippedCard);
     cpu_flag = 0;
@@ -511,8 +513,7 @@ initialDeal(deck);
 function play(){
    display();
     
-
-    if (turn == "player hand"){
+   if (turn == "player hand"){
         
         playerHandTurn();
     }

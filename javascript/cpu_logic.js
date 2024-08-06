@@ -36,17 +36,18 @@ export class CPULogic{
     }
 
     findWorstCard(){
+        if (this.hand.length>0){
         var lowestValue = this.hand[0].potentialValue;
         var worstIndex = 0;
         
-        for(var i = 1;i<this.hand.length;i++){
+        for(var i = 0;i<this.hand.length;i++){
             if(this.hand[i].potentialValue<lowestValue){
                 lowestValue = this.hand[i].potentialValue;
                 worstIndex = i;
             }
         }
         this.worstCard = this.hand[worstIndex];
-        
+    }
     }
 
     getPossiblePairs(card){ 

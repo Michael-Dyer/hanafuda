@@ -5,8 +5,12 @@ export class Yaku {
     constructor(cardArr=[]){
     this.cardArr = cardArr;
 
-    this.isYaku = false;
-    this.hasKoiKoid = false;
+    this.hasYaku = false;
+
+    this.allYakus = [];
+    this.allYakus = [];
+    this.allPoints = [];
+    this.totalPoints = 0;
 
     this.almostChaff = false;
     this.almostAnimal = false;
@@ -60,48 +64,47 @@ export class Yaku {
     }
 
     clear(){
-    this.isYaku = false;
-    this.hasKoiKoid = false;
-
-    this.almostChaff = false;
-    this.almostAnimal = false;
-    this.almostRibbon = false;
-    this.almostLights = false
-    
-    this.almostBDB = false;
-    this.almostRPR = false;
-    this.almostBPR = false;
-    this.almostLWR = false;
-    this.almostCBV = false;
-    this.almostMV = false;
-
-    this.atChaff = false;
-    this.atAnimal = false;
-    this.atRibbon = false;
-    this.atLights = false
-    
-    this.atBDB = false;
-    this.atRPR = false;
-    this.atBPR = false;
-    this.atLWR = false;
-    this.atCBV = false;
-    this.atMV = false;
-   
-    
-    this.chaff = [];
-    this.animal = [];
-    this.ribbon = [];
-    this.lights = [];
-
-    
-    this.BDB = [];
-    this.RPR = [];
-    this.BPR = [];
-    this.CBV = [];
-    this.MV = [];
-
-    this.containsRain = false;
-    this.LWR = [];
+        this.cardArr = cardArr;    
+        this.hasYaku = false;
+        this.hasKoiKoid = false;        
+        this.allYakus = [];
+        this.allPoints = [];
+        this.totalPoints = 0;        
+        this.almostChaff = false;
+        this.almostAnimal = false;
+        this.almostRibbon = false;
+        this.almostLights = false;
+           
+        this.almostBDB = false;
+        this.almostRPR = false;
+        this.almostBPR = false;
+        this.almostLWR = false;
+        this.almostCBV = false;
+        this.almostMV = false;
+        
+        this.atChaff = false;
+        this.atAnimal = false;
+        this.atRibbon = false;
+        this.atLights = false;
+            
+        this.atBDB = false;
+        this.atRPR = false;
+        this.atBPR = false;
+        this.atLWR = false;
+        this.atCBV = false;
+        this.atMV = false;
+        this.chaff = [];
+        this.animal = [];
+        this.ribbon = [];
+        this.lights = [];
+        this.BDB = [];
+        this.RPR = [];
+        this.BPR = [];
+        this.CBV = [];
+        this.MV = [];
+        
+        this.containsRain = false;
+        this.LWR = [];
     }
 
     fill(A=this.cardArr){
@@ -169,9 +172,14 @@ export class Yaku {
         this.LWR =  this.removeDuplicates(this.LWR)
     }
 
+
     check(){
+        
+        //this will allow the program to check if the score has changed so the win condition is only met during the change in yaku state
+
         if(this.chaff.length>=10){
             this.atChaff = true;
+
         }
         if(this.chaff.length==9){
             this.almostChaff = true;
@@ -179,6 +187,7 @@ export class Yaku {
 
         if(this.animal.length>=5){
             this.atAnimal = true;
+
         }
         if(this.animal.length==4){
             this.almostAnimal=true;
@@ -186,6 +195,7 @@ export class Yaku {
 
         if(this.ribbon.length>=5){
             this.atRibbon = true;
+
         }
         if(this.ribbon.length==4){
             this.almostRibbon=true;
@@ -193,6 +203,7 @@ export class Yaku {
 
         if(this.lights.length>=3){
             this.atLights=true;
+
         }
         
         if(this.lights.length==2){
@@ -201,6 +212,7 @@ export class Yaku {
 
         if(this.lights.length>=3&&this.containsRain==true){
             this.atLWR=true;
+
         }
         if((this.containsRain&&this.lights.length==2)||this.lights.length==2){
             this.almostLWR=true;
@@ -208,6 +220,7 @@ export class Yaku {
 
         if(this.BDB.length>=3){
             this.atBDB=true;
+
         }
         if(this.BDB.length==2){
             this.almostBDB=true;
@@ -215,6 +228,7 @@ export class Yaku {
 
         if(this.RPR.length>=3){
             this.atRPR=true;
+
         }
         if(this.RPR.length==2){
             this.almostRPR=true;
@@ -222,6 +236,7 @@ export class Yaku {
         
         if(this.BPR.length>=3){
             this.atBPR=true;
+
         }
         if(this.BPR.length==2){
             this.almostBPR=true;
@@ -229,6 +244,7 @@ export class Yaku {
 
         if(this.MV.length==2){
             this.atMV=true;
+
         }
         if(this.MV.length==1){
             this.almostMV=true;
@@ -236,13 +252,15 @@ export class Yaku {
 
         if(this.CBV.length==2){
             this.atCBV=true;
+
         }
         if(this.CBV.length==1){
             this.almostCBV=true;
         }
 
     }
-
+   
+    //for displaying captured card names
     isAlmost(card){
         if (this.almostChaff == true){
             return this.chaff.includes(card);
@@ -277,16 +295,146 @@ export class Yaku {
         }
     }
 
+    //for displaying captured card names
+    isAt(card){
+        if (this.atChaff == true){
+            return this.chaff.includes(card);
+        }
+        if (this.atAnimal == true){
+            return this.animal.includes(card);
+        }
+        if (this.atRibbon == true){
+            return this.ribbon.includes(card);
+        }
+        if (this.atLights == true){
+            return this.lights.includes(card);
+        }
+        
+        if (this.atBDB == true){
+            return this.BDB.includes(card);
+        }
+        if (this.atRPR == true){
+            return this.RPR.includes(card);
+        }
+        if (this.atBPR == true){
+            return this.BPR.includes(card);
+        }
+        if (this.atLWR == true){
+            return this.LWR.includes(card);
+        }
+        if (this.atCBV == true){
+            return this.CBV.includes(card);
+        }
+        if (this.atMV == true){
+            return this.MV.includes(card);
+        }
+    }
 
-    
+    returnYakus(A){
+        var yakus = []
+        var y = {
+            name: "",
+            cards: [],
+            points: 0
+        }
+/*
+        chaff
+        animal
+        ribbon
+        lights
+        
+        LWR   
+        BDB
+        RPR
+        BPR
+        CBV
+        MV*/
+        for(var i = 0;i<A.length;i++){
+       
+        
+
+
+        if (this.atChaff == true){
+            y.name = "Chaff";
+            y.cards = this.chaff;
+
+
+            yakus.push(y);
+        }
+        if (this.atAnimal == true){
+            y.name = "Animals";
+            y.cards = this.animal;
+
+            yakus.push(y);
+
+        }
+        if (this.atRibbon == true){
+            y.name = "Ribbons";
+            y.cards = this.ribbon;
+
+            yakus.push(y);
+
+        }
+        if (this.atLights == true){
+            y.name = "Lights";
+            y.cards = this.lights;
+
+            yakus.push(y);
+
+        }
+        if (this.atBDB == true){
+            y.name = "Boar, Deer, Butterflies";
+            y.cards = this.BDB;
+
+            yakus.push(y);
+
+        }
+        if (this.atRPR == true){
+            y.name = "Red Poetry Slips";
+            y.cards = this.RPR;
+
+            yakus.push(y);
+
+        }
+        if (this.atBPR == true){
+            y.name = "Blue Poetry Slips";
+            y.cards = this.BPR;
+
+            yakus.push(y);
+
+        }
+        if (this.atLWR == true){
+            y.name = "Lights with Rain";
+            y.cards = this.LWR;
+
+            yakus.push(y);
+
+        }
+        if (this.atCBV == true){
+            y.name = "Cherry Blossom Viewing";
+            y.cards = this.CBV;
+
+            yakus.push(y);
+
+        }
+        if (this.atMV == true){
+            y.name = "Moon Viewing";
+            y.cards = this.MV;
+
+            yakus.push(y);
+
+        }
+        console.log(yakus);
+        
+        }
+    return yakus
+    }
+
+
+
     
 
 }
-var deck = new Deck(); 
-deck.newDeck();
-
-
-var yaku = new Yaku(deck.cards);
 
 
 

@@ -2,6 +2,9 @@ import CPULogic from "./cpu_logic.js";
 import Deck from "./deck.js"
 import Yaku from "./yaku.js"
 
+
+//test script is a modification to easily debug scoring and koi-koi rules
+
 let deck = new Deck();
 deck.newDeck();
 deck.shuffle();
@@ -13,7 +16,9 @@ let player = {
     capturedCards: [],
     score: 0,
     yakus: [],
-    roundPoints: 0
+    firstYakus :[],
+    roundPoints: 0,
+    hasKoiKoid: false
 }
 
 var cpuScoring = new Yaku([]);
@@ -22,7 +27,9 @@ let cpu = {
     capturedCards: [],
     score: 0,
     yakus: [],
-    roundPoints: 0
+    firstYakus : [],
+    roundPoints: 0,
+    hasKoiKoid: false
 }
 
 let fieldCards = [];
@@ -154,7 +161,6 @@ function display(){
         if (playerScoring.atArr.includes(player.capturedCards[i])){
             p.style.border = "double"
             p.style.background = "yellow"
-            console.log("bing")
         }
         player_captured_cards.append(p);
     }
@@ -164,14 +170,17 @@ function display(){
         let p = document.createElement("p");
         p.textContent = `${cpu.capturedCards[i].cardName}: `
         p.style.display = "inline";
-        if (cpuScoring.isAlmost(cpu.capturedCards[i])){
+        
+        cpuScoring.isAt(cpu.capturedCards[i]);
+        cpuScoring.isAlmost(cpu.capturedCards[i]);
+        if (cpuScoring.almostArr.includes(cpu.capturedCards[i])){
             p.style.border = "double"
         }
-        if (cpuScoring.isAt(cpu.capturedCards[i])){
+        
+        if (cpuScoring.atArr.includes(cpu.capturedCards[i])){
             p.style.border = "double"
             p.style.background = "yellow"
         }
-
         cpu_captured_cards.append(p);
     }
 
@@ -236,15 +245,15 @@ function display(){
 
 function initialDeal(deck){
 
-    for (let i = 0;i<25;i++){
+    for (let i = 0;i<8;i++){
         player.hand.push(deck.cards.pop());      
     }   
-    /*
+    
     for (let i = 0;i<8;i++){
         cpu.hand.push(deck.cards.pop());
-    }*/
+    }
 
-    for (let i = 0;i<5;i++){
+    for (let i = 0;i<8;i++){
         fieldCards.push(deck.cards.pop());
     }
     display();
@@ -275,7 +284,6 @@ function captureThree(month,opp){
     }
 
     
-
 }
 
 
@@ -283,6 +291,13 @@ function captureThree(month,opp){
 function matchMade(){
     //consider adding in animation
     //make sure to add in rule to capture all three cards if that is an option
+    playerScoring.fill(player.capturedCards);
+    cpuScoring.fill(cpu.capturedCards);
+    playerScoring.check();
+    cpuScoring.check();
+    
+
+
     if (turn == "player hand"){
 
 
@@ -322,6 +337,18 @@ function matchMade(){
         removeCard(fieldCards, clickedFieldCard);
         }
 
+    //this currently works
+    playerScoring.fill(player.capturedCards);
+    playerScoring.check();
+    playerScoring.getYakus();
+    
+    player.firstYakus = playerScoring.yakus;
+    
+    
+
+    if(player.firstYakus.length>0){
+    console.log("bingo")}
+
     }
 
     if(turn == "cpu hand"){
@@ -360,21 +387,32 @@ function matchMade(){
     }
 
 
-
     playerScoring.fill(player.capturedCards);
     cpuScoring.fill(cpu.capturedCards);
     playerScoring.check();
     cpuScoring.check();
 
-    //testing delete later
-    player.yakus = playerScoring.returnYakus(player.capturedCards);
+    
+    
 
 }
 
 function scoringState(opp){
-    if(1>2){
-
+    var scoringPromt = ""
+    for (const y in opp.firstYakus){
+        scoringPromt += `You have scored 0 points for ${opp.firstYakus[y]}!
+        `;
     }
+    
+
+    if(confirm(`${scoringPromt}Would you like to Koi Koi?
+        `)){
+        console.log("you've koi koid")
+    }
+    else{
+        console.log("new round")
+    }
+
 }
 
 function newRound(){
@@ -446,7 +484,7 @@ function playerFlipTurn(){
     if(clickedFieldCard!=""){
         if(clickedFieldCard.month==flippedCard.month){
             matchMade();
-            turn = "player hand";
+            turn = "cpu hand";
             fieldClickFlag = 0;
         }
         //clickedFieldCard="";
@@ -455,7 +493,7 @@ function playerFlipTurn(){
     if(fieldClickFlag == 1&&containsMonth==false){
         fieldCards.push(flippedCard);
         flippedCard = "";
-        turn = "player hand";
+        turn = "cpu hand";
     }
     brain.update(cpu.hand,fieldCards,cpu.capturedCards,player.capturedCards,flippedCard);
     cpu_flag = 0;
@@ -511,9 +549,14 @@ function cpuFlipTurn(){
 
 initialDeal(deck);
 function play(){
-   display();
+    display();
+
+    playerScoring.fill(player.capturedCards);
+    cpuScoring.fill(cpu.capturedCards);
+    playerScoring.check();
+    cpuScoring.check();
     
-   if (turn == "player hand"){
+    if (turn == "player hand"){
         
         playerHandTurn();
     }

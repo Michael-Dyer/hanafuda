@@ -2,9 +2,6 @@ import CPULogic from "./cpu_logic.js";
 import Deck from "./deck.js"
 import Yaku from "./yaku.js"
 
-
-//test script is a modification to easily debug scoring and koi-koi rules
-
 let deck = new Deck();
 deck.newDeck();
 deck.shuffle();
@@ -15,8 +12,8 @@ let player = {
     hand: [],
     capturedCards: [],
     score: 0,
+    firstYakus: [],
     yakus: [],
-    firstYakus :[],
     roundPoints: 0,
     hasKoiKoid: false
 }
@@ -26,8 +23,8 @@ let cpu = {
     hand: [],
     capturedCards: [],
     score: 0,
+    firstYakus: [],
     yakus: [],
-    firstYakus : [],
     roundPoints: 0,
     hasKoiKoid: false
 }
@@ -146,43 +143,72 @@ function display(){
     
     //edit this to highlight or bold matches or potential matches
 
-
+    /*
     for(let i = 0;i<player.capturedCards.length;i++){
         let p = document.createElement("p");
         p.textContent = `${player.capturedCards[i].cardName}: `
         p.style.display = "inline";
-        
-        playerScoring.isAt(player.capturedCards[i]);
-        playerScoring.isAlmost(player.capturedCards[i]);
-        if (playerScoring.almostArr.includes(player.capturedCards[i])){
+
+        if (playerScoring.isAlmost(player.capturedCards[i])){
             p.style.border = "double"
         }
-        
-        if (playerScoring.atArr.includes(player.capturedCards[i])){
+        if (playerScoring.isAt(player.capturedCards[i])){
             p.style.border = "double"
             p.style.background = "yellow"
         }
         player_captured_cards.append(p);
     }
-    
 
     for(let i = 0;i<cpu.capturedCards.length;i++){
         let p = document.createElement("p");
         p.textContent = `${cpu.capturedCards[i].cardName}: `
         p.style.display = "inline";
-        
-        cpuScoring.isAt(cpu.capturedCards[i]);
-        cpuScoring.isAlmost(cpu.capturedCards[i]);
-        if (cpuScoring.almostArr.includes(cpu.capturedCards[i])){
+        if (cpuScoring.isAlmost(cpu.capturedCards[i])){
             p.style.border = "double"
         }
-        
-        if (cpuScoring.atArr.includes(cpu.capturedCards[i])){
+        if (cpuScoring.isAt(cpu.capturedCards[i])){
             p.style.border = "double"
             p.style.background = "yellow"
         }
+
         cpu_captured_cards.append(p);
-    }
+    }*/
+        for(let i = 0;i<player.capturedCards.length;i++){
+            let p = document.createElement("p");
+            p.textContent = `${player.capturedCards[i].cardName}: `
+            p.style.display = "inline";
+            
+            playerScoring.isAt(player.capturedCards[i]);
+            playerScoring.isAlmost(player.capturedCards[i]);
+            if (playerScoring.almostArr.includes(player.capturedCards[i])){
+                p.style.border = "double"
+            }
+            
+            if (playerScoring.atArr.includes(player.capturedCards[i])){
+                p.style.border = "double"
+                p.style.background = "yellow"
+            }
+            player_captured_cards.append(p);
+        }
+        
+    
+        for(let i = 0;i<cpu.capturedCards.length;i++){
+            let p = document.createElement("p");
+            p.textContent = `${cpu.capturedCards[i].cardName}: `
+            p.style.display = "inline";
+            
+            cpuScoring.isAt(cpu.capturedCards[i]);
+            cpuScoring.isAlmost(cpu.capturedCards[i]);
+            if (cpuScoring.almostArr.includes(cpu.capturedCards[i])){
+                p.style.border = "double"
+            }
+            
+            if (cpuScoring.atArr.includes(cpu.capturedCards[i])){
+                p.style.border = "double"
+                p.style.background = "yellow"
+            }
+            cpu_captured_cards.append(p);
+        }
 
 
     for (let i = 0;i<player.hand.length;i++){
@@ -248,7 +274,7 @@ function initialDeal(deck){
     for (let i = 0;i<8;i++){
         player.hand.push(deck.cards.pop());      
     }   
-    
+
     for (let i = 0;i<8;i++){
         cpu.hand.push(deck.cards.pop());
     }
@@ -277,6 +303,7 @@ function captureThree(month,opp){
     for (var y= 0; y<3;y++){
     for (var i = 0;i<fieldCards.length;i++){
         if (fieldCards[i].month == month){
+            console.log(fieldCards[i].month)
             opp.capturedCards.push(fieldCards[i]);
             removeCard(fieldCards, fieldCards[i]);
         }
@@ -284,6 +311,7 @@ function captureThree(month,opp){
     }
 
     
+
 }
 
 
@@ -291,13 +319,6 @@ function captureThree(month,opp){
 function matchMade(){
     //consider adding in animation
     //make sure to add in rule to capture all three cards if that is an option
-    playerScoring.fill(player.capturedCards);
-    cpuScoring.fill(cpu.capturedCards);
-    playerScoring.check();
-    cpuScoring.check();
-    
-
-
     if (turn == "player hand"){
 
 
@@ -337,18 +358,6 @@ function matchMade(){
         removeCard(fieldCards, clickedFieldCard);
         }
 
-    //this currently works
-    playerScoring.fill(player.capturedCards);
-    playerScoring.check();
-    playerScoring.getYakus();
-    
-    player.firstYakus = playerScoring.yakus;
-    
-    
-
-    if(player.firstYakus.length>0){
-    console.log("bingo")}
-
     }
 
     if(turn == "cpu hand"){
@@ -387,20 +396,20 @@ function matchMade(){
     }
 
 
+
     playerScoring.fill(player.capturedCards);
     cpuScoring.fill(cpu.capturedCards);
     playerScoring.check();
     cpuScoring.check();
 
     
-    
 
 }
 
 function scoringState(opp){
     var scoringPromt = ""
-    for (const y in opp.firstYakus){
-        scoringPromt += `You have scored 0 points for ${opp.firstYakus[y]}!
+    for (const y in opp.yakus){
+        scoringPromt += `You have scored 0 points for ${y}!
         `;
     }
     
@@ -449,6 +458,7 @@ function playerHandTurn(){
         fieldClickFlag = 0;
         clickedPlayerCard="";
         }
+        //console.log(fieldCardClickFlag);
         if(fieldClickFlag == 1&&containsMonth==false){
 
             fieldCards.push(clickedPlayerCard);
@@ -549,13 +559,9 @@ function cpuFlipTurn(){
 
 initialDeal(deck);
 function play(){
-    display();
-
-    playerScoring.fill(player.capturedCards);
-    cpuScoring.fill(cpu.capturedCards);
-    playerScoring.check();
-    cpuScoring.check();
+   display();
     
+
     if (turn == "player hand"){
         
         playerHandTurn();

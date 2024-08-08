@@ -5,16 +5,13 @@ export class Yaku {
     constructor(cardArr=[]){
     this.cardArr = cardArr;
 
-    this.hasYaku = false;
-
     this.almostArr = [];
     this.atArr = [];
 
 
 
     this.yakus = [];
-    this.allPoints = [];
-    this.totalPoints = 0;
+    
 
     this.almostChaff = false;
     this.almostAnimal = false;
@@ -77,47 +74,42 @@ export class Yaku {
 
     }
 
-    clear(){
-        this.cardArr = cardArr;    
-        this.hasYaku = false;
-        this.hasKoiKoid = false;        
-        this.allPoints = [];
-        this.totalPoints = 0;        
-        this.almostChaff = false;
-        this.almostAnimal = false;
-        this.almostRibbon = false;
-        this.almostLights = false;
-           
-        this.almostBDB = false;
-        this.almostRPR = false;
-        this.almostBPR = false;
-        this.almostLWR = false;
-        this.almostCBV = false;
-        this.almostMV = false;
-        
-        this.atChaff = false;
-        this.atAnimal = false;
-        this.atRibbon = false;
-        this.atLights = false;
-            
-        this.atBDB = false;
-        this.atRPR = false;
-        this.atBPR = false;
-        this.atLWR = false;
-        this.atCBV = false;
-        this.atMV = false;
-        this.chaff = [];
-        this.animal = [];
-        this.ribbon = [];
-        this.lights = [];
-        this.BDB = [];
-        this.RPR = [];
-        this.BPR = [];
-        this.CBV = [];
-        this.MV = [];
-        
-        this.containsRain = false;
-        this.LWR = [];
+    clear(cardArr=[]){
+    this.cardArr = cardArr;   
+    this.almostArr = [];
+    this.atArr = [];
+    this.yakus = [];
+    this.almostChaff = false;
+    this.almostAnimal = false;
+    this.almostRibbon = false;
+    this.almostLights = false;   
+    this.almostBDB = false;
+    this.almostRPR = false;
+    this.almostBPR = false;
+    this.almostLWR = false;
+    this.almostCBV = false;
+    this.almostMV = false;
+    this.atChaff = false;
+    this.atAnimal = false;
+    this.atRibbon = false;
+    this.atLights = false; 
+    this.atBDB = false;
+    this.atRPR = false;
+    this.atBPR = false;
+    this.atLWR = false;
+    this.atCBV = false;
+    this.atMV = false; 
+    this.chaff = [];
+    this.animal = [];
+    this.ribbon = [];
+    this.lights = [];    
+    this.BDB = [];
+    this.RPR = [];
+    this.BPR = [];
+    this.CBV = [];
+    this.MV = [];
+    this.containsRain = false;
+    this.LWR = [];
     }
 
     fill(A=this.cardArr){
@@ -493,13 +485,14 @@ export class Yaku {
         }
     }
 
+    /*
     scoreTotal(names){
         var score = 0
         for(var i=0;i<names.length;i++){
             score+=this.scoreByName(names[i])
         }
         return score;
-    }
+    }*/
     
     
 

@@ -16,9 +16,10 @@ let player = {
     capturedCards: [],
     score: 0,
     yakus: [],
-    firstYakus :[],
     roundPoints: 0,
     hasKoiKoid: false,
+    justWon: false,
+    startedThisRound: true
 }
 
 var cpuScoring = new Yaku([]);
@@ -26,10 +27,19 @@ let cpu = {
     hand: [],
     capturedCards: [],
     score: 0,
-    yakus: [],
-    firstYakus : [],
+    //firstYakus : [],
     roundPoints: 0,
     hasKoiKoid: false,
+    justWon: false,
+    startedThisRound: false
+}
+
+function clearOppCards(opp){
+    opp.hand = [];
+    opp.capturedCards = [];
+    opp.roundPoints = 0;
+    opp.hasKoiKoid;
+    opp.justWon = false;
 }
 
 let fieldCards = [];
@@ -428,7 +438,7 @@ function playerHandTurn(){
 
     }
  
-}//forgot flip cards HAVE to match with a card
+}
 
 
 
@@ -513,9 +523,16 @@ function cpuFlipTurn(){
 
 }
 
-const shallowCompare = (obj1, obj2) =>
-    Object.keys(obj1).length === Object.keys(obj2).length &&
-    Object.keys(obj1).every(key => obj1[key] === obj2[key])
+
+
+    function getTempPoints(opp){
+        var tempPoints = 0
+           for (const y in opp.yakus){
+                tempPoints+=playerScoring.scoreByName(opp.yakus[y])
+            }
+            
+        return tempPoints;
+    }
 
 function playerKoiKoiOption(){
     var scoringPromt = ""
@@ -530,6 +547,7 @@ function playerKoiKoiOption(){
         `)){
         console.log("you've koi koid")
         player.hasKoiKoid = true;
+        player.roundPoints = getTempPoints(player);
     }
     else{
         winAlert();
@@ -537,10 +555,12 @@ function playerKoiKoiOption(){
 
 }
 
+//make sure to let the last winner start the next round
 function winAlert(){
     var scoringPromt = ""
     var tempPoints = 0
-    if (turn=="player flip"){
+    //this will only displace once turn has changed over to hand turn (end of flip turn)
+    if (turn=="player hand"||turn=="cpu hand"){
         scoringPromt="You've won this round!\n\n"
 
         for (const y in player.yakus){
@@ -554,11 +574,34 @@ function winAlert(){
             tempPoints=tempPoints*2;
             scoringPromt+="\nX2 points for getting over 7 points\n"
         }
+        if (cpu.hasKoiKoid){tempPoints=tempPoints*2;
+            tempPoints=tempPoints*2;
+            scoringPromt+="\nX2 points because the cpu has called Koi-Koi\n"
+
+        }
         scoringPromt+=`That will award you ${tempPoints} this round`
         alert(scoringPromt)
         player.score+=tempPoints
+        //make sure to add a way to reset all vaules except for player score
+        player.justWon = true;
+        newRound();
     }
+
+    //make sure to finish this up later
+    if (turn=="cpu flip"||turn=="cpu hand"){   
+        scoringPromt="The CPU has won this round!\n\n"
+
+
+
+
+
+
+        cpu.justWon = true;
+    }
+ 
 }
+
+
 
 function checkWinConditions(){
     playerScoring.getYakus();
@@ -567,32 +610,15 @@ function checkWinConditions(){
     cpu.yakus = cpuScoring.yakus;
     player.yakus = playerScoring.yakus;
 
-    //not sure why this is happening but heres a fix
-    player.firstYakus = playerScoring.removeDuplicates(player.firstYakus);
-    cpu.firstYakus = cpuScoring.removeDuplicates(cpu.firstYakus);
-
-    if (player.hasKoiKoid==false){
-        player.firstYakus = playerScoring.yakus;
-    }
-    if(cpu.hasKoiKoid==false){
-        cpu.firstYakus = cpuScoring.yakus
-    }
-
-
-    //player win script
-
-    //if (playerScoring.yakus.length>0){
+    
+    //first win condition
     if (player.hasKoiKoid==false&&playerScoring.yakus.length>0){
-
-
-        playerKoiKoiOption();
-        player.firstYakus = player.yakus;
-       
+        playerKoiKoiOption();       
     }
     
    
-
-    if(shallowCompare(player.yakus,player.firstYakus)==false){
+    //second win condition 
+    if(player.roundPoints<getTempPoints(player)){
         winAlert()    
     }
 
@@ -600,10 +626,78 @@ function checkWinConditions(){
 
 
 
+function newRound(){
+    round++;
+    playerScoring.clear();
+    cpuScoring.clear();
+    clearOppCards(player);
+    clearOppCards(cpu);
+    
+    
+    
+    //tie condition
+    if(player.justWon==false&&cpu.justWon==false){
+        if(player.startedThisRound==true){
+            turn="cpu hand"
+            cpu.startedThisRound=true;
+            player.startedThisRound=false;
+        }
+        else if (cpu.startedThisRound==true){
+            turn="player hand"
+            player.startedThisRound=true;
+            cpu.startedThisRound=false;
+        }
+    }
+    else if(player.justWon==true){
+        player.justWon=false;
+        turn="player hand"
+        player.startedThisRound=true;
+        cpu.startedThisRound=false;
+    }
+    else if(cpu.justWon==true){
+        cpu.justWon=false;
+        turn="cpu hand"
+        cpu.startedThisRound=true;
+        player.startedThisRound=false;
+    }
+
+    /*round++;
+    playerScoring.clear();
+    cpuScoring.clear();
+    clearOppCards(player);
+    clearOppCards(cpu);
+    flippedCard = "";
+
+    deck.newDeck();
+    console.log(deck);
+    initialDeal(deck);
+*/}
+
+//make sure the right opp starts
+function checkTie(){
+    if(turn=="player hand"||turn=="cpu hand"){
+        if(player.hand.length==0&&cpu.hand.length==0){
+            alert("Tie game: no points awarded")
+
+        
+
+    
+        newRound();
+        }
+    }
+}
+
 
 initialDeal(deck);
+
+//make sure to implement a tie if neither player gets a yaku
 function play(){
     display();
+
+    checkTie()
+
+    
+
 
     playerScoring.fill(player.capturedCards);
     cpuScoring.fill(cpu.capturedCards);

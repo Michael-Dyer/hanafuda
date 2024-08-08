@@ -18,7 +18,7 @@ let player = {
     yakus: [],
     firstYakus :[],
     roundPoints: 0,
-    hasKoiKoid: false
+    hasKoiKoid: false,
 }
 
 var cpuScoring = new Yaku([]);
@@ -29,7 +29,7 @@ let cpu = {
     yakus: [],
     firstYakus : [],
     roundPoints: 0,
-    hasKoiKoid: false
+    hasKoiKoid: false,
 }
 
 let fieldCards = [];
@@ -245,13 +245,13 @@ function display(){
 
 function initialDeal(deck){
 
-    for (let i = 0;i<8;i++){
+    for (let i = 0;i<17;i++){
         player.hand.push(deck.cards.pop());      
     }   
     
-    for (let i = 0;i<8;i++){
+    /*for (let i = 0;i<8;i++){
         cpu.hand.push(deck.cards.pop());
-    }
+    }*/
 
     for (let i = 0;i<8;i++){
         fieldCards.push(deck.cards.pop());
@@ -290,11 +290,7 @@ function captureThree(month,opp){
 
 function matchMade(){
     //consider adding in animation
-    //make sure to add in rule to capture all three cards if that is an option
-    playerScoring.fill(player.capturedCards);
-    cpuScoring.fill(cpu.capturedCards);
-    playerScoring.check();
-    cpuScoring.check();
+    
     
 
 
@@ -337,17 +333,7 @@ function matchMade(){
         removeCard(fieldCards, clickedFieldCard);
         }
 
-    //this currently works
-    playerScoring.fill(player.capturedCards);
-    playerScoring.check();
-    playerScoring.getYakus();
     
-    player.firstYakus = playerScoring.yakus;
-    
-    
-
-    if(player.firstYakus.length>0){
-    console.log("bingo")}
 
     }
 
@@ -397,27 +383,7 @@ function matchMade(){
 
 }
 
-function scoringState(opp){
-    var scoringPromt = ""
-    for (const y in opp.firstYakus){
-        scoringPromt += `You have scored 0 points for ${opp.firstYakus[y]}!
-        `;
-    }
-    
 
-    if(confirm(`${scoringPromt}Would you like to Koi Koi?
-        `)){
-        console.log("you've koi koid")
-    }
-    else{
-        console.log("new round")
-    }
-
-}
-
-function newRound(){
-
-}
 
 
 
@@ -484,7 +450,7 @@ function playerFlipTurn(){
     if(clickedFieldCard!=""){
         if(clickedFieldCard.month==flippedCard.month){
             matchMade();
-            turn = "cpu hand";
+            turn = "player hand";
             fieldClickFlag = 0;
         }
         //clickedFieldCard="";
@@ -493,7 +459,7 @@ function playerFlipTurn(){
     if(fieldClickFlag == 1&&containsMonth==false){
         fieldCards.push(flippedCard);
         flippedCard = "";
-        turn = "cpu hand";
+        turn = "player hand";
     }
     brain.update(cpu.hand,fieldCards,cpu.capturedCards,player.capturedCards,flippedCard);
     cpu_flag = 0;
@@ -547,6 +513,94 @@ function cpuFlipTurn(){
 
 }
 
+const shallowCompare = (obj1, obj2) =>
+    Object.keys(obj1).length === Object.keys(obj2).length &&
+    Object.keys(obj1).every(key => obj1[key] === obj2[key])
+
+function playerKoiKoiOption(){
+    var scoringPromt = ""
+    for (const y in player.yakus){
+        scoringPromt += `
+        You have ${playerScoring.scoreByName(playerScoring.yakus[y])} points with ${player.yakus[y]}!
+        `;
+    }
+    
+    console.log(playerScoring)
+    if(confirm(`${scoringPromt}Would you like to Koi Koi?
+        `)){
+        console.log("you've koi koid")
+        player.hasKoiKoid = true;
+    }
+    else{
+        winAlert();
+    }
+
+}
+
+function winAlert(){
+    var scoringPromt = ""
+    var tempPoints = 0
+    if (turn=="player flip"){
+        scoringPromt="You've won this round!\n\n"
+
+        for (const y in player.yakus){
+            scoringPromt += `
+            You have ${playerScoring.scoreByName(playerScoring.yakus[y])} points with ${player.yakus[y]}!
+            `;
+            tempPoints+=playerScoring.scoreByName(playerScoring.yakus[y])
+        }
+
+        if (tempPoints>=7){
+            tempPoints=tempPoints*2;
+            scoringPromt+="\nX2 points for getting over 7 points\n"
+        }
+        scoringPromt+=`That will award you ${tempPoints} this round`
+        alert(scoringPromt)
+        player.score+=tempPoints
+    }
+}
+
+function checkWinConditions(){
+    playerScoring.getYakus();
+    cpuScoring.getYakus();
+    
+    cpu.yakus = cpuScoring.yakus;
+    player.yakus = playerScoring.yakus;
+
+    //not sure why this is happening but heres a fix
+    player.firstYakus = playerScoring.removeDuplicates(player.firstYakus);
+    cpu.firstYakus = cpuScoring.removeDuplicates(cpu.firstYakus);
+
+    if (player.hasKoiKoid==false){
+        player.firstYakus = playerScoring.yakus;
+    }
+    if(cpu.hasKoiKoid==false){
+        cpu.firstYakus = cpuScoring.yakus
+    }
+
+
+    //player win script
+
+    //if (playerScoring.yakus.length>0){
+    if (player.hasKoiKoid==false&&playerScoring.yakus.length>0){
+
+
+        playerKoiKoiOption();
+        player.firstYakus = player.yakus;
+       
+    }
+    
+   
+
+    if(shallowCompare(player.yakus,player.firstYakus)==false){
+        winAlert()    
+    }
+
+}
+
+
+
+
 initialDeal(deck);
 function play(){
     display();
@@ -563,6 +617,7 @@ function play(){
 
     else if (turn == "player flip"){
         playerFlipTurn();
+        checkWinConditions();
     }
     else if (turn == "cpu hand"){
         cpuHandTurn();
@@ -571,9 +626,9 @@ function play(){
     else if (turn == "cpu flip"){
         cpuFlipTurn();
         clickedFieldCard = "";
+        checkWinConditions();
     }
 
-    //remeber to set clickedPlayerCard to "" when leaving cpu flip turn
 
     //console.log(turn);
     mainClickFlag = 0;
@@ -582,6 +637,5 @@ function play(){
     display();
 }   
 
-//var yaku = new(Yaku(deck));
 
 export default play();

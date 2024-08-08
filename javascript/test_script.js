@@ -16,7 +16,7 @@ let player = {
     capturedCards: [],
     score: 0,
     yakus: [],
-    firstYakus :[],
+    //firstYakus :[],
     roundPoints: 0,
     hasKoiKoid: false,
 }
@@ -27,7 +27,7 @@ let cpu = {
     capturedCards: [],
     score: 0,
     yakus: [],
-    firstYakus : [],
+    //firstYakus : [],
     roundPoints: 0,
     hasKoiKoid: false,
 }
@@ -513,9 +513,16 @@ function cpuFlipTurn(){
 
 }
 
-const shallowCompare = (obj1, obj2) =>
-    Object.keys(obj1).length === Object.keys(obj2).length &&
-    Object.keys(obj1).every(key => obj1[key] === obj2[key])
+
+
+    function getTempPoints(opp){
+        var tempPoints = 0
+           for (const y in opp.yakus){
+                tempPoints+=playerScoring.scoreByName(opp.yakus[y])
+            }
+            
+        return tempPoints;
+    }
 
 function playerKoiKoiOption(){
     var scoringPromt = ""
@@ -530,6 +537,7 @@ function playerKoiKoiOption(){
         `)){
         console.log("you've koi koid")
         player.hasKoiKoid = true;
+        player.roundPoints = getTempPoints(player);
     }
     else{
         winAlert();
@@ -540,7 +548,7 @@ function playerKoiKoiOption(){
 function winAlert(){
     var scoringPromt = ""
     var tempPoints = 0
-    if (turn=="player flip"){
+    if (turn=="player flip"||turn=="player hand"){
         scoringPromt="You've won this round!\n\n"
 
         for (const y in player.yakus){
@@ -554,11 +562,24 @@ function winAlert(){
             tempPoints=tempPoints*2;
             scoringPromt+="\nX2 points for getting over 7 points\n"
         }
+        if (cpu.hasKoiKoid){tempPoints=tempPoints*2;
+            tempPoints=tempPoints*2;
+            scoringPromt+="\nX2 points because the cpu has called Koi-Koi\n"
+
+        }
         scoringPromt+=`That will award you ${tempPoints} this round`
         alert(scoringPromt)
         player.score+=tempPoints
     }
+
+    //finish this up later
+    if (turn=="cpu flip"||turn=="cpu hand"){   
+        scoringPromt="The CPU has won this round!\n\n"
+    }
+ 
 }
+
+
 
 function checkWinConditions(){
     playerScoring.getYakus();
@@ -567,32 +588,15 @@ function checkWinConditions(){
     cpu.yakus = cpuScoring.yakus;
     player.yakus = playerScoring.yakus;
 
-    //not sure why this is happening but heres a fix
-    player.firstYakus = playerScoring.removeDuplicates(player.firstYakus);
-    cpu.firstYakus = cpuScoring.removeDuplicates(cpu.firstYakus);
-
-    if (player.hasKoiKoid==false){
-        player.firstYakus = playerScoring.yakus;
-    }
-    if(cpu.hasKoiKoid==false){
-        cpu.firstYakus = cpuScoring.yakus
-    }
-
-
-    //player win script
-
-    //if (playerScoring.yakus.length>0){
+    
+    //first win condition
     if (player.hasKoiKoid==false&&playerScoring.yakus.length>0){
-
-
-        playerKoiKoiOption();
-        player.firstYakus = player.yakus;
-       
+        playerKoiKoiOption();       
     }
     
    
-
-    if(shallowCompare(player.yakus,player.firstYakus)==false){
+    //second win condition 
+    if(player.roundPoints<getTempPoints(player)){
         winAlert()    
     }
 

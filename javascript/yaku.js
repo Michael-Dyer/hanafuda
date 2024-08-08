@@ -227,7 +227,7 @@ export class Yaku {
             this.atLWR=true;
 
         }
-        if((this.containsRain&&this.lights.length==2)||this.lights.length==2){
+        if((this.containsRain&&this.lights.length==3)||this.lights.length==2){
             this.almostLWR=true;
         }
 
@@ -415,6 +415,91 @@ export class Yaku {
     }
         
         
+    scoreByName(name){
+        var points = 0;
+        if (name=="Chaff"){
+            points = this.chaff.length - 9;
+
+            return points;
+        }
+        else if (name=="Animals"){
+            points = this.animal.length - 4;
+          
+            return points;
+        }
+        else if (name=="Ribbons"){
+            points = this.ribbon.length - 4;
+            return points;
+        }
+        else if (name=="Lights"){
+            if(this.lights.length==3){
+                points = 5;
+            }
+            else if(this.lights.length){
+                points = 8;
+            }
+            return points;
+        }
+
+        else if (name=="Lights With Rain"){
+            if(this.lights.length==3){
+                points = 7;
+            }
+            else if (this.lights.length==4){
+                points = 10;
+            }
+            return points;
+        }
+        else if (name=="Cherry Blossom Viewing"){
+            points = 5;
+            return points;
+        }
+        else if (name=="Moon Viewing"){
+            points = 5;
+            return points;
+        }
+        else if (name=="Boar, Deer, Butterflies"){
+            var mod = 0;
+            if (this.animal.length>3){
+                mod = this.animal.length - 3;
+            }
+
+
+            points = 5 + mod;
+            return points;
+        }
+        else if (name=="Red Poetry Ribbons"){
+            var mod = 0;
+            if (this.ribbon.length>3){
+                mod = this.ribbon.length - 3;
+            }
+
+
+            points = 5 + mod;
+            return points;
+        }
+        else if (name=="Blue Poetry Ribbons"){
+            var mod = 0;
+            if (this.ribbon.length>3){
+                mod = this.ribbon.length - 3;
+            }
+
+
+            points = 5 + mod;
+            return points;
+        }
+        else {
+            return points;
+        }
+    }
+
+    scoreTotal(names){
+        var score = 0
+        for(var i=0;i<names.length;i++){
+            score+=this.scoreByName(names[i])
+        }
+        return score;
+    }
     
     
 

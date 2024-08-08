@@ -21,7 +21,8 @@ let player = {
     hasKoiKoid: false,
     justWon: false,
     startedThisRound: false,
-    cancledKoiKoi: false
+    cancledKoiKoi: false,
+    justKoiKoid: false
 }
 
 var cpuScoring = new Yaku([]);
@@ -34,7 +35,9 @@ let cpu = {
     hasKoiKoid: false,
     justWon: false,
     startedThisRound: true,
-    cancledKoiKoi: false
+    cancledKoiKoi: false,
+    justKoiKoid: false,
+    shownCard: ""
 }
 
 function clearOppCards(opp){
@@ -42,7 +45,7 @@ function clearOppCards(opp){
     opp.capturedCards = [];
     opp.roundPoints = 0;
     opp.hasKoiKoid = false;
-    opp.justWon = false;
+    opp.justKoiKoid = false;
 }
 
 let fieldCards = [];
@@ -224,6 +227,9 @@ function display(){
     for (let i=0;i<cpu.hand.length;i++){
         let img = document.createElement("img");
         img.src = cpu.hand[i].imgName; 
+
+        //blackout cpu card
+        img.style.filter="brightness(0%)"
         img.setAttribute('class', 'card');
   
         cpu_hand.appendChild(img);
@@ -481,20 +487,19 @@ function cpuHandTurn(){
 
     if (cpu_flag==0&&mainClickFlag==1){
     brain.getHandPairs();
+
     cpu_flag = 1;
     }
     else if (mainClickFlag==1){
     brain.findWorstCard();
-    
     if (brain.posiblePairs.length>0){
         matchMade();
         turn = "cpu flip";
-
     }
     else {
         fieldCards.push(brain.worstCard);
         removeCard(cpu.hand,brain.worstCard);
-        turn = "cpu flip";        
+        turn = "cpu flip";  
     }
 }
 }
@@ -553,15 +558,18 @@ function playerKoiKoiOption(){
         `)){
         console.log("you've koi koid")
         player.hasKoiKoid = true;
+        console.log(player.hasKoiKoid)
+
         //update so player doesn't win if they get a yaku this flip
         playerScoring.getYakus();
         player.yakus = playerScoring.yakus;
         player.roundPoints = getTempPoints(player);
+        player.justKoiKoid = true;
     }
     else{
         console.log("ya won by not koi koiing")
         player.cancledKoiKoi = true;
-        playerWinAlertinAlert();
+        playerWinAlert();
     }
 
 }
@@ -579,10 +587,12 @@ function cpuKoiKoiOption(){
         `)){
         console.log("cpu has koi koid")
         cpu.hasKoiKoid = true;
+        console.log(cpu.hasKoiKoid)
         //update round points so win doesn't happen on the flip
         cpuScoring.getYakus();   
         cpu.yakus = cpuScoring.yakus;
         cpu.roundPoints = getTempPoints(cpu);
+        cpu.justKoiKoid = true;
     }
     else{
         console.log("cpu won not koi koing")
@@ -598,8 +608,8 @@ function playerWinAlert(){
     var tempPoints = 0
     //The win should only take place after the flip turn, therefore i am setting the win condition to be at the start of the round right after the flip
     //player win condition
-   
-    if (turn=="cpu hand"||player.cancledKoiKoi==true){
+    console.log("in player win")
+    if (turn=="cpu hand"||player.cancledKoiKoi==true||(player.hand.length==0&&cpu.hand.length==0)){
        
         scoringPromt="You've won this round!\n\n"
 
@@ -614,7 +624,7 @@ function playerWinAlert(){
             tempPoints=tempPoints*2;
             scoringPromt+="\nX2 points for getting over 7 points\n"
         }
-        if (cpu.hasKoiKoid){tempPoints=tempPoints*2;
+        if (cpu.hasKoiKoid){
             tempPoints=tempPoints*2;
             scoringPromt+="\nX2 points because the cpu has called Koi-Koi\n"
 
@@ -623,7 +633,8 @@ function playerWinAlert(){
         alert(scoringPromt)
         player.score+=tempPoints
         //make sure to add a way to reset all vaules except for player score
-        player.justWon = true;
+        player.justWon=true;
+        console.log(`im in player just won funtion and the result is${player.justWon}`)
         newRound();
     }
 }
@@ -632,7 +643,8 @@ function playerWinAlert(){
     function cpuWinAlert(){
         var scoringPromt = ""
         var tempPoints = 0
-        if (turn=="player hand"||cpu.cancledKoiKoi==true){   
+        console.log("in cpu win")
+        if (turn=="player hand"||cpu.cancledKoiKoi==true||(player.hand.length==0&&cpu.hand.length==0)){   
             scoringPromt="The CPU has won this round!\n\n"
             for (const y in cpu.yakus){
                 scoringPromt += `
@@ -647,7 +659,6 @@ function playerWinAlert(){
             }
             if (player.hasKoiKoid){
                 tempPoints=tempPoints*2;
-                tempPoints=tempPoints*2;
                 scoringPromt+="\nX2 points because player has called Koi-Koi\n"
 
             }
@@ -656,6 +667,8 @@ function playerWinAlert(){
             cpu.score+=tempPoints
             //make sure to add a way to reset all vaules except for player score
             cpu.justWon = true;
+            console.log(`im in cpu just won funtion and the result is${cpu.justWon}`)
+
             newRound();
             
     }
@@ -670,42 +683,47 @@ function checkWinConditions(){
     cpu.yakus = cpuScoring.yakus;
     player.yakus = playerScoring.yakus;
 
-    //console.log(cpuScoring.yakus)
-    //cpu yaukus are correct
-    console.log("cpu points")
+    console.log("cpu stats----")
     console.log(cpu.roundPoints)
     console.log(getTempPoints(cpu))
 
-    console.log("player points")
+    console.log("player stats----")
     console.log(player.roundPoints)
     console.log(getTempPoints(player))
+
     //player koi koi condition
     if (player.hasKoiKoid==false&&playerScoring.yakus.length>0&&cpu.hasKoiKoid==false){
+        console.log("in player koi koi option")
         playerKoiKoiOption();       
     }
 
     //cpu koi koi condition
     if (cpu.hasKoiKoid==false&&cpuScoring.yakus.length>0&&player.hasKoiKoid==false){
+        console.log("in cpu koi koi option")
         cpuKoiKoiOption();
     }
 
     //player win on having points after cpu koi koid
-    if (playerScoring.roundPoints<getTempPoints(player)&&cpu.hasKoiKoid){
+    if (player.roundPoints<getTempPoints(player)&&cpu.hasKoiKoid==true){
+        console.log("in player win after a koi koi by opp")
         playerWinAlert();
     }
 
     //cpu win if points after koi koi
-    if (cpuScoring.roundPoints<getTempPoints(cpu)&&cpu.hasKoiKoid){
+    if (cpu.roundPoints<getTempPoints(cpu)&&player.hasKoiKoid==true){
+        console.log("in cpu win after koi koi by opp")
         cpuWinAlert();
     }
    
     //player gets more points after koi koi
     if(player.roundPoints<getTempPoints(player)&&player.roundPoints>0){
+        console.log("inregular player win")
         playerWinAlert();    
     }
 
     //cpu gets more points after koi koi
     if(cpu.roundPoints<getTempPoints(cpu)&&cpu.roundPoints>0){
+        console.log("in reg cpu win")
         cpuWinAlert();    
     }
 
@@ -718,7 +736,7 @@ function checkWinConditions(){
 
 
 function newRound(){
-
+    cpu.shownCard = ""
     player.cancledKoiKoi = false;
     cpu.cancledKoiKoi = false;
     round++;
@@ -737,10 +755,11 @@ function newRound(){
     playerCardClickFlag = 0;
     fieldCardClickFlag = 0;
 
-//this flag is responsible for not letting cpu move unless clicked
     mainClickFlag = 0;
     cpu_flag = 0;
-    
+    console.log(`player justwon ${player.justWon}`)
+    console.log(`cpu justwon ${cpu.justWon}`)
+
     
     
     //tie condition
@@ -774,23 +793,33 @@ function newRound(){
     deck.shuffle();
     initialDeal(deck);
     display();
-    /*round++;
-    playerScoring.clear();
-    cpuScoring.clear();
-    clearOppCards(player);
-    clearOppCards(cpu);
-    flippedCard = "";
+    
+    brain.update(cpu.hand,fieldCards,cpu.capturedCards,player.capturedCards,flippedCard);
+    
 
-    deck.newDeck();
-    console.log(deck);
-    initialDeal(deck);
-*/}
+  
+}
 
 //make sure the right opp starts
 function checkTie(){
     if(turn=="player hand"||turn=="cpu hand"){
         if(player.hand.length==0&&cpu.hand.length==0){
-            alert("Tie game: no points awarded")
+            playerScoring.getYakus();
+            cpuScoring.getYakus();
+    
+            cpu.yakus = cpuScoring.yakus;
+            player.yakus = playerScoring.yakus;
+
+            if (cpu.yakus.length>0){
+                cpuWinAlert();
+
+            }
+            else if (player.yakus.length>0){
+                playerWinAlert();
+            }
+            else{
+                alert("Tie game: no points awarded")
+            }
 
         
 
@@ -819,22 +848,32 @@ function play(){
     cpuScoring.check();
     
     if (turn == "player hand"){
-        
+        cpu.justKoiKoid=false;
         playerHandTurn();
     }
 
     else if (turn == "player flip"){
         playerFlipTurn();
-        checkWinConditions();
+        if (player.justKoiKoid==true){
+        }
+        else{
+            checkWinConditions();
+        }
     }
     else if (turn == "cpu hand"){
         cpuHandTurn();
-        
+        player.justKoiKoid=false;
     }
     else if (turn == "cpu flip"){
         cpuFlipTurn();
         clickedFieldCard = "";
-        checkWinConditions();
+
+
+        if (cpu.justKoiKoid==true){
+        }
+        else{
+            checkWinConditions();
+        }
     }
 
 

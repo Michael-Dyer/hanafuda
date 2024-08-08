@@ -229,7 +229,9 @@ function display(){
         img.src = cpu.hand[i].imgName; 
 
         //blackout cpu card
-        img.style.filter="brightness(0%)"
+        if (cpu.hand[i]!=cpu.shownCard){
+            img.style.filter="brightness(0%)"
+        }
         img.setAttribute('class', 'card');
   
         cpu_hand.appendChild(img);
@@ -482,13 +484,23 @@ function playerFlipTurn(){
     brain.update(cpu.hand,fieldCards,cpu.capturedCards,player.capturedCards,flippedCard);
     cpu_flag = 0;
 }
-
+    //allow display of card being turned
 function cpuHandTurn(){
 
     if (cpu_flag==0&&mainClickFlag==1){
     brain.getHandPairs();
 
     cpu_flag = 1;
+
+    if (brain.posiblePairs.length>0){
+        cpu.shownCard=brain.bestPair.card1;
+    }
+    else {
+        brain.findWorstCard()
+        cpu.shownCard=brain.worstCard;
+    }
+    
+
     }
     else if (mainClickFlag==1){
     brain.findWorstCard();
@@ -558,7 +570,6 @@ function playerKoiKoiOption(){
         `)){
         console.log("you've koi koid")
         player.hasKoiKoid = true;
-        console.log(player.hasKoiKoid)
 
         //update so player doesn't win if they get a yaku this flip
         playerScoring.getYakus();
